@@ -53,7 +53,7 @@ class Buildr
 
 	}
 
-	public static function generate_links($link_type) {
+	public static function generate_links($group_wanted) {
 
 		$assets       = \Config::get('buildr.assets');
 		$files        = array();
@@ -63,15 +63,14 @@ class Buildr
 		// Loop through the asset types.
 		foreach($assets as $type => $settings) {
 			foreach($settings['groups'] as $group => $assets) {
-				foreach($assets as $asset) {
+				if((is_array($group_wanted) and in_array($group, $group_wanted)) or ($group == $group_wanted)) {
+					foreach($assets as $asset) {
 
-					$extension    = pathinfo($asset, PATHINFO_EXTENSION);
-					$filename     = substr($asset, 0, -(strlen($extension)+1));
-					$ext          = (array_key_exists('ext', $settings)) ? $settings['ext'] : $extension;
-					$output_path  = $type.'/';
-					$output_path .= (array_key_exists('ext', $settings)) ? $filename.'.'.$settings['ext'] : $asset;
-
-					if($ext == $link_type) {
+						$extension    = pathinfo($asset, PATHINFO_EXTENSION);
+						$filename     = substr($asset, 0, -(strlen($extension)+1));
+						$ext          = (array_key_exists('ext', $settings)) ? $settings['ext'] : $extension;
+						$output_path  = $type.'/';
+						$output_path .= (array_key_exists('ext', $settings)) ? $filename.'.'.$settings['ext'] : $asset;
 
 						switch($combine_mode) {
 							case 'type':
@@ -89,7 +88,6 @@ class Buildr
 						}
 
 					}
-
 				}
 			}
 		}
